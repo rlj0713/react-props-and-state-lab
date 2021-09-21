@@ -15,17 +15,38 @@ class App extends React.Component {
     }
   }
 
+  // The spread operator allows for future key-value changes within state
   onChangeType = ({ target: { value } }) => {
     this.setState({
+      ...this.state,
       filters: {
         ...this.state.filters,
         type: value
       }
     })
-    console.log('yes')
+  }
+
+  onAdoptPet = (id) => {
+    const pets = this.state.pets.map(p => {
+      return p.id === id ? { ...p, isAdopted: true } : p;
+    })
+    this.setState({ pets: pets })
+  }
+
+  fetchPets = () => {
+    let endpoint = '/api/pets'
+
+    if (this.state.filters.type !== 'all') {
+      endpoint += `?type=${this.state.filters.type}`
+    }
+    
+    fetch(endpoint)
+      .then(res => res.json())
+      .then(data => this.setState({ pets: data }));
   }
 
   render() {
+    console.log(this.state.pets)
     return (
       <div className="ui container">
         <header>
@@ -34,10 +55,16 @@ class App extends React.Component {
         <div className="ui container">
           <div className="ui grid">
             <div className="four wide column">
-              <Filters onChangeType={this.onChangeType} />
+              <Filters
+                onChangeType={this.onChangeType}
+                onFindPetsClick={this.fetchPets}
+              />
             </div>
             <div className="twelve wide column">
-              <PetBrowser />
+              <PetBrowser
+                pets={this.state.pets}
+                onAdoptPet={this.onAdoptPet}
+              />
             </div>
           </div>
         </div>
