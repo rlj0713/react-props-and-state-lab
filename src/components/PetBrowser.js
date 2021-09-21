@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Pet from './Pet'
+// import Pet from './Pet'
 
 class PetBrowser extends React.Component {
   render() {
